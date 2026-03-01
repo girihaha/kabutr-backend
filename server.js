@@ -13,7 +13,24 @@ const db = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
-
+// Auto create table on server start
+db.query(`
+  CREATE TABLE IF NOT EXISTS posters (
+    id TEXT PRIMARY KEY,
+    club_name TEXT NOT NULL,
+    title TEXT,
+    summary TEXT NOT NULL,
+    full_details TEXT NOT NULL,
+    poster_image_url TEXT NOT NULL,
+    club_logo_url TEXT,
+    registration_url TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+`).then(() => {
+  console.log("Posters table ready");
+}).catch(err => {
+  console.error("Table creation error:", err);
+});
 // Root route
 app.get("/", (req, res) => {
   res.send("Kabutr backend running ✅");
